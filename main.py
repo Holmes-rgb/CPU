@@ -24,7 +24,7 @@ if __name__ == "__main__":
     }
 
     # Load instructions from a file
-    start_index = 100
+    memIndex = 100
     file_path = "instructions.txt"
     with open(file_path, 'r') as file:
         for i, line in enumerate(file):
@@ -40,5 +40,10 @@ if __name__ == "__main__":
             opcode = opcode_map.get(operation, 0)
             instruction = Instruction.build_instruction(opcode, Rd, Rs1, Rs2, immed)
 
-            cpu.memory[start_index + i] = instruction
-
+            cpu.memory[cpu.pc + i] = instruction
+    while True:
+        instructionWord = cpu.IF()
+        instruction = cpu.ID(instructionWord)
+        cpu.EX(instruction)
+        if instruction.opcode == 7:
+            break
