@@ -47,9 +47,9 @@ class CPU:
                 eff_address = self.registers[Instruction.Rs1] + Instruction.immed
                 if Instruction.Rd != 0:
                     self.registers[Instruction.Rd] = self.memory[eff_address]
-            case 6: #SW TODO: should put 7 but is putting 2
+            case 6: #SW
                 eff_address = self.registers[Instruction.Rs2] + Instruction.immed
-                self.memory[eff_address] = Instruction.Rs1
+                self.memory[eff_address] = self.registers[Instruction.Rs1]
             case 7:
                 for i in range(NUM_REGISTERS):
                     print("R" + str(i) + "=" + str(self.registers[i]) )

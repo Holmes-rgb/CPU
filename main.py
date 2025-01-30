@@ -38,7 +38,7 @@ if __name__ == "__main__":
     start_index = 100
     with open("instructions.txt", 'r') as file:
         for i, line in enumerate(file):
-            line = line.strip()
+            line = line.split("#")[0].strip()
             for op, pattern in patterns.items():
                 match = pattern.match(line)
                 if match:

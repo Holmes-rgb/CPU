@@ -1,12 +1,11 @@
-noop
-addi r1, r0, 8
-addi r2, r0, 7
-add r3, r1, r1
-add r4, r2, r2
-beq r3, r4, 3
-addi r8, r0, 10
-jal r0, 2
-addi r8, r0, 1000
-sw r2, 16(r8)
-lw r5, 16(r8)
+addi r1, r0, 5 # r1 now has 5
+addi r2, r0, 6 # r2 now has 6
+add r3, r2, r1 # r3 now has 11
+add r4, r1, r2 # r4 now has 11
+beq r3, r4, 3 # branch if r3 == r4; here, the branch is taken
+addi r8, r0, 10 # skip
+jal r0, 2 # skip
+addi r8, r0, 30 # r8 now has 30
+sw r3, 10(r8) # store 11 in mem[10+30]
+lw r5, 10(r8) # load mem[10+30] into r5; r5 now has the value 11
 return
