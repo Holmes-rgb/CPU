@@ -1,3 +1,4 @@
+import re
 if __name__ == "__main__":
     from CPU import CPU
     from Instruction import Instruction
@@ -23,24 +24,63 @@ if __name__ == "__main__":
         "return": 0x7
     }
 
-    # Load instructions from a file
-    memIndex = 100
-    file_path = "instructions.txt"
-    with open(file_path, 'r') as file:
+    patterns = {
+        "noop": re.compile(r"^noop$"),
+        "addi": re.compile(r"^addi r(\d+), r(\d+), (-?\d+)$"),
+        "add": re.compile(r"^add r(\d+), r(\d+), r(\d+)$"),
+        "beq": re.compile(r"^beq r(\d+), r(\d+), (-?\d+)$"),
+        "jal": re.compile(r"^jal r(\d+), (-?\d+)$"),
+        "sw": re.compile(r"^sw r(\d+), (-?\d+)\(r(\d+)\)$"),
+        "lw": re.compile(r"^lw r(\d+), (-?\d+)\(r(\d+)\)$"),
+        "return": re.compile(r"^return$"),
+    }
+
+    start_index = 100
+    with open("instructions.txt", 'r') as file:
         for i, line in enumerate(file):
-            parts = line.strip().replace(",", "").split()
-            operation = parts[0]
+            line = line.strip()
+            for op, pattern in patterns.items():
+                match = pattern.match(line)
+                if match:
+                    opcode = opcode_map[op]
+                    args = [int(x) for x in match.groups()] if match.groups() else []
+                    Rd = None
+                    Rs1 = None
+                    Rs2 = None
+                    immed = None
 
-            # Extract values, defaulting to None where components are absent
-            Rd = int(parts[1][1:]) if len(parts) > 1 and parts[1].startswith('r') else None
-            Rs1 = int(parts[2][1:]) if len(parts) > 2 and parts[2].startswith('r') else None
-            Rs2 = int(parts[3][1:]) if len(parts) > 3 and parts[3].startswith('r') else None
-            immed = int(parts[-1]) if parts[-1].isdigit() else None
+                    # Assign based on extracted values, defaulting missing values to None
+                    match op:
+                        case "addi":
+                            Rd = args[0]
+                            Rs1 = args[1]
+                            immed = args[2]
+                        case "add":
+                            Rd = args[0]
+                            Rs1 = args[1]
+                            Rs2 = args[2]
+                        case "beq":
+                            Rs1 = args[0]
+                            Rs2 = args[1]
+                            immed = args[2]
+                        case "jal":
+                            Rd = args[0]
+                            immed = args[1]
+                        case "sw":
+                            Rs1 = args[0]
+                            immed = args[1]
+                            Rs2 = args[2]
+                        case "lw":
+                            Rd = args[0]
+                            immed = args[1]
+                            Rs1 = args[2]
 
-            opcode = opcode_map.get(operation, 0)
-            instruction = Instruction.build_instruction(opcode, Rd, Rs1, Rs2, immed)
+                    instruction = Instruction.build_instruction(opcode, Rd, Rs1, Rs2, immed)
+                    cpu.memory[cpu.pc + i] = instruction
+                    break
 
-            cpu.memory[cpu.pc + i] = instruction
+
+    cpu.pc = 100
     while True:
         instructionWord = cpu.IF()
         instruction = cpu.ID(instructionWord)
