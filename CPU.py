@@ -13,7 +13,6 @@ class CPU:
 
     def IF (self):
         instruction_word = self.memory[self.pc]
-        self.next_pc += 1
         return instruction_word
 
     def ID (self, instruction_word):

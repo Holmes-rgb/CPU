@@ -4,14 +4,7 @@ if __name__ == "__main__":
     from Instruction import Instruction
     # Create a CPU instance
     cpu = CPU()
-
-    # # Example instruction word (4-byte integer)
-    # example_instruction = 0xF1234567
-    #
-    # # Decode the instruction
-    # decoded_instruction = cpu.ID(example_instruction)
-    # print(f"Decoded Instruction: opcode={decoded_instruction.opcode}, Rd={decoded_instruction.Rd}, "
-    #       f"Rs1={decoded_instruction.Rs1}, Rs2={decoded_instruction.Rs2}, immed={decoded_instruction.immed}")
+    cpu.pc = 100
 
     opcode_map = {
         "noop": 0x0,
@@ -35,7 +28,7 @@ if __name__ == "__main__":
         "return": re.compile(r"^return$"),
     }
 
-    start_index = 100
+    # read in from file and parse strings
     with open("instructions.txt", 'r') as file:
         for i, line in enumerate(file):
             line = line.split("#")[0].strip()
@@ -49,7 +42,7 @@ if __name__ == "__main__":
                     Rs2 = None
                     immed = None
 
-                    # Assign based on extracted values, defaulting missing values to None
+                    # depending on the opcode the data needs to be put into different vars
                     match op:
                         case "addi":
                             Rd = args[0]
@@ -79,9 +72,8 @@ if __name__ == "__main__":
                     cpu.memory[cpu.pc + i] = instruction
                     break
 
-
-    cpu.pc = 100
     while True:
+        cpu.next_pc = cpu.pc + 1
         instructionWord = cpu.IF()
         instruction = cpu.ID(instructionWord)
         cpu.EX(instruction)
